@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"> 
+		<link rel="stylesheet" href="css/main.css">
+
+	</head>
+	<body>
+
+<!-- 
+	background
+		balloon slide up from bottom
+			varied scale sizes
+		burst action
+			flash image
+			burning balloon image
+			fall down fast
+ -->
+		<div id="content">
+			<div id="balloon" class="balloon animated slideInUp">
+				<img src="images/blue-balloon.jpg">
+				<!-- <div class="bag"></div>
+				 <div class="basket"></div>-->
+			</div>
+		</div>
+
+		<template id="balloon-template">
+			<div class="balloon animated slideInUp">
+				<img src="images/blue-balloon.jpg" class="balloon-img">
+			</div>
+		</template>
+
+
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+		<script type="text/javascript">
+			var cnt = 0,
+				cntMax = 5;
+			function nextCount(){
+				if(cnt >= cntMax){
+					cnt = 0;
+				}
+				return cnt++;
+			}
+
+			function makeBalloon(template){
+				var key = "balloon_"+(new Date()).getTime();
+
+				if(!template.content){	// Work-around for IE but could work for all browsers
+					var temp = document.createElement('div');
+					temp.innerHTML = template.innerHTML;
+					item = temp.cloneNode(true);
+				} else {
+					item = template.content.cloneNode(true);	
+				}
+
+				// Set attributes we're interested in.
+				item.querySelector('.balloon').setAttribute('id', key);
+				// item.querySelector(".gallery").setAttribute('onclick', "launchGalleryItem('"+data['url']+"')");
+				item.querySelector('.balloon-img').src = '/images/balloon_' + nextCount() + '.png';
+
+				return item;
+			}
+
+			function generateParams(){
+				var params = {};
+
+				params.styling = {};
+				params.styling.height = 300;		// Is this div width or area used for animation?
+				params.styling.width = 300;
+				params.styling.left = 0;
+				params.styling.bottom = 0;
+
+				params.speed = 10000;	// milliseconds should be relative to image size (smaller = slower)
+
+				return params;
+			}
+
+			function makeIt() {
+				var template = document.querySelector('#balloon-template'),
+				    balloon = makeBalloon(template),
+				    container = document.querySelector('#content'),
+				    id = balloon.querySelector('.balloon').getAttribute('id'),
+				    params = generateParams();
+
+console.log(balloon);
+
+				container.appendChild(document.importNode(balloon, true));
+				// $("#"+id).animate(params.style, params.speed, "linear", function(){
+				// 	$(this).hide();
+				// });
+
+			}
+
+			$( window ).load(function() {
+				
+			});
+		</script>
+
+	</body>
+</html>

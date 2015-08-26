@@ -1,0 +1,117 @@
+html, body, div {
+	margin: 0;
+	padding: 0;
+}
+
+#content {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: cyan;
+	overflow: hidden;
+}
+
+.balloon {
+	position: absolute;
+	left: 200px;
+	bottom: -100%;
+	width: 150px;
+	height: 320px;
+	background-color: blue;
+}
+#balloon {
+	-webkit-animation-duration: 20s;
+	-moz-animation-duration: 20s;
+	animation-duration: 20s;
+
+	-webkit-animation-delay: 1s;
+	-moz-animation-delay: 1s;
+	animation-delay: 1s; 
+}
+
+.bag {
+	position: absolute;
+	left: 0;
+	background-color: yellow;
+	height: 200px;
+	width: 150px;
+}
+
+.burst {
+	background-color: red;
+}
+
+.basket {
+	position: absolute;
+	left: 40px;
+	bottom: 0;
+	background-color: brown;
+	height: 60px;
+	width: 70px;
+	margin-top: 80px;
+}
+
+
+/*-----Animation-----*/
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes slideInUp {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+
+  100% {
+    -webkit-transform: translate3d(0, -500%, 0);
+    transform: translate3d(0, -500%, 0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+
+  100% {
+    -webkit-transform: translate3d(0, -500%, 0);
+    transform: translate3d(0, -500%, 0);
+  }
+}
+
+.slideInUp {
+  -webkit-animation-name: slideInUp;
+  animation-name: slideInUp;
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+}
