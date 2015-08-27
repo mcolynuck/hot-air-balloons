@@ -16,17 +16,21 @@
 			burning balloon image
 			fall down fast
  -->
+
 		<div id="content">
-			<div id="balloon" class="balloon animated slideInUp">
-				<img src="images/blue-balloon.jpg">
-				<!-- <div class="bag"></div>
-				 <div class="basket"></div>-->
+			<div id="bannerPanel">
+				<h1>The Sky's The Limit!</h1>
+				<span id="clearmsg">Click in view to stop adding balloons, click on balloon to pop it!</span>
+				<audio autoplay loop controls style="position:absolute;top:15px;z-index:1000;">
+					<source src="sounds/burner.wav" type="audio/wav">
+				</audio>
 			</div>
 		</div>
 
+
 		<template id="balloon-template">
-			<div class="balloon animated slideInUp">
-				<img src="images/blue-balloon.jpg" class="balloon-img">
+			<div id="" class="image-container">			<!-- block, width and height -->
+				<img id="" src="" alt="balloon" class="image-img"/>		<!-- height:100% -->
 			</div>
 		</template>
 
@@ -34,9 +38,18 @@
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
+
+		<!-- EXECUTABLE CODE -->
 		<script type="text/javascript">
 			var cnt = 0,
-				cntMax = 5;
+				cntMax = 7,			// Number of balloon images
+				liveCnt = 0,
+				maxLiveCnt = 12,
+				stopMaking = false;
+
+			/*
+			 * Counter for use in looping over balloon images.
+			 */
 			function nextCount(){
 				if(cnt >= cntMax){
 					cnt = 0;
@@ -44,6 +57,10 @@
 				return cnt++;
 			}
 
+
+			/*
+			 * Create balloon element and set atributes
+			 */
 			function makeBalloon(template){
 				var key = "balloon_"+(new Date()).getTime();
 
@@ -56,45 +73,182 @@
 				}
 
 				// Set attributes we're interested in.
-				item.querySelector('.balloon').setAttribute('id', key);
+				item.querySelector('.image-container').setAttribute('id', key);
 				// item.querySelector(".gallery").setAttribute('onclick', "launchGalleryItem('"+data['url']+"')");
-				item.querySelector('.balloon-img').src = '/images/balloon_' + nextCount() + '.png';
+				item.querySelector('.image-img').src = 'images/balloon_' + nextCount() + '.png';
 
 				return item;
 			}
 
-			function generateParams(){
-				var params = {};
 
-				params.styling = {};
-				params.styling.height = 300;		// Is this div width or area used for animation?
-				params.styling.width = 300;
-				params.styling.left = 0;
-				params.styling.bottom = 0;
+			/*
+			 * Positions, sizes, times this item
+			 * id - id of div that surrounds the image
+			 */
+			function setDisplayParams(id) {
+				var viewWidth = document.documentElement.clientWidth,
+				    viewHeight = $("#content").css("height");
 
-				params.speed = 10000;	// milliseconds should be relative to image size (smaller = slower)
+				var top = parseInt(viewHeight) + 10;		// Add a bit extra, just in case.
+				$(id).css("top", top+"px");		// Start image just below bottom of screen.
 
-				return params;
+				// set image size (based on image size)
+				var height = Math.random() * 1000 * 0.8;	// 0.8 is scaler to increase/decrease height size so we can have even larger or lesser maximum sizes.
+				if(height < 20) {
+					height += 20;		// No micro-sized balloons!
+				} else if(height > 2000) {
+					height = 2000;	// No mega-sized balloons!
+				}
+				$(id).css("height", height+"px");
+				
+				var width = height * 30 / 25;		// Chrome didn't like it when I just set the height so use image ratio of 30 high by 25 wide.
+				$(id).css("width", width+"px");
+
+				// set x-position using viewWidth
+				var left = Math.random() * (viewWidth + 300) - 300;		// Increase screen width for calc then offset so we overlap images on left side.
+				$(id).css("left", left+"px");
+
+				// set speed relative to size (smaller = longer)
+				var time = 40000 / height;		// Adjust time constant to slow down (increase) or speed up (decrease);
+				$(id).css("-webkit-animation-duration", time+"s");
+				$(id).css("-moz-animation-duration", time+"s");
+				$(id).css("animation-duration", time+"s");
+
+				$(id).css("visibility", "visible");
+
+				// Set z-index based on size (smmaller is lower).  Usually not a problem but if sizes are close and overlapping.
+				var zIndex = parseInt(height);
+				$(id).css("z-index", zIndex);
+// console.log("top: "+top+"  height: "+height+"   left: "+left+"   time: "+time+"  zIndex: "+zIndex);
 			}
 
+
+			/*
+			 * Entry point tomake a new balloon
+			 */
 			function makeIt() {
+				if(stopMaking) {
+					return;
+				}
+
 				var template = document.querySelector('#balloon-template'),
 				    balloon = makeBalloon(template),
 				    container = document.querySelector('#content'),
-				    id = balloon.querySelector('.balloon').getAttribute('id'),
-				    params = generateParams();
+				    id = balloon.querySelector('.image-container').getAttribute('id');
 
-console.log(balloon);
+				if (liveCnt >= maxLiveCnt) {
+					if(intervalTimer){
+						window.clearInterval(intervalTimer);
+						intervalTimer = null;
+					}
+					return;		// Too many on screen already so wait until some ar popped or rise out of sight.
+				}
 
+				liveCnt++;
+// console.log("+liveCnt: "+liveCnt);
 				container.appendChild(document.importNode(balloon, true));
-				// $("#"+id).animate(params.style, params.speed, "linear", function(){
-				// 	$(this).hide();
-				// });
+				setDisplayParams("#"+id);
 
+				// Remove node after completion to avoid memory issue with all the imates loaded but no longer visible.
+				$('#'+id).on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(event){
+console.log("animation completed: "+event.originalEvent.animationName);
+					if(event.originalEvent.animationName == 'shake') {
+						return;		// Ignore this as it's not the end animation when user clicks on balloon.
+					}	// Only slideInUp or slideOutDown will continue through.
+
+					liveCnt--;
+console.log("-liveCnt: "+liveCnt);
+					$('#'+id).remove();
+					makeIt();		// Create a new one to take its place.
+					// $(this)[0].parentNode.removeChild($(this)[0]);
+				});
+
+				// // Show it and start the animation
+				$("#"+id).addClass("animated slideInUp");
 			}
 
-			$( window ).load(function() {
+
+			/**
+			 * Div element being popped by mouse click
+			 */
+			function popBalloon(divElm) {
 				
+				// Stop the animation in its tracks
+				divElm.css('animation-play-state', 'paused');
+				divElm.css('-moz-animation-play-state', 'paused');
+				divElm.css('-webkit-animation-play-state', 'paused');
+    			
+    			// Get it's current position
+    			var pos = divElm.position();
+
+				// Set it with the position, overriding it's original setting prior to animation.				
+				divElm.css({top: pos.top, left: pos.left, position:'absolute'});
+
+				// Remove animation classes
+				divElm.removeClass("slideInUp");
+				divElm.removeClass("animated");
+
+				// Turn animation process back on
+				divElm.css('animation-play-state', 'running');
+				divElm.css('-moz-animation-play-state', 'running');
+				divElm.css('-webkit-animation-play-state', 'running');
+
+				// Use the calculated duration time for this element in the fall
+				var curDuration = divElm.css('animation-duration');
+				var parts = curDuration.split("s");		// Need to remove 's'
+				curDuration = parseInt((parseInt(parts[0]) / 3)) + 's';	// A fraction of the rising time
+
+				// Set duration for this animation
+				divElm.css('animation-duration', '1s');
+				divElm.css('-moz-animation-duration', '1s');
+				divElm.css('-webkit-animation-duration', '1s');
+
+				// Set new animations , durations and delays.
+				divElm.css('animation', 'shake 1s, slideOutDown '+curDuration);
+				divElm.css('-moz-animation', 'shake 1s, slideOutDown '+curDuration);
+				divElm.css('-webkit-animation', 'shake 1s, slideOutDown '+curDuration);
+
+				divElm.css('animation-delay', '0s, 1s');
+				divElm.css('-moz-animation-delay', '0s, 1s');
+				divElm.css('-webkit-animation-delay', '0s, 1s');
+			}
+
+
+
+			/* --------------------------------------------------------------*/
+			var intervalTimer = null;
+			$( window ).load(function() {	// Window is ready for us to start processing
+
+				// Randomize first balloon image to load
+				cnt = parseInt(Math.random() * 10);		// If over maxCnt, it will be rest to zero.
+
+				for(var i=0; i < 3; i++){		// Kick off with a few balloons
+					makeIt();
+				}
+
+				$("#content").on("click", function(event){
+					if ($(event.target).is(".image-img")) {
+console.log("pop!");
+						popBalloon($(event.target).parent());
+					} else {
+console.log("stop");
+						stopMaking = true;
+						if(intervalTimer){
+							window.clearInterval(intervalTimer);
+							intervalTimer = null;
+						}
+					}
+				});
+
+				// Every 5 seconds, kick off another balloon with an offset time so they're not so regular looking.
+				intervalTimer = window.setInterval(function(){
+						window.setTimeout(function(){
+							makeIt();
+						},
+						Math.random()*10);
+					},
+					7000
+				);
 			});
 		</script>
 
