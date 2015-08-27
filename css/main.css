@@ -57,7 +57,6 @@ body {
 	display: block;
 	visibility: hidden;
 	position: absolute;
-   	/*bottom: -100%;		/* Move below bottom of screen to start */
 	-webkit-animation-duration: 10s;
 	-moz-animation-duration: 10s;
 	animation-duration: 10s;
@@ -102,8 +101,8 @@ body {
   }
 
   100% {
-    -webkit-transform: translateY(-2000px);
-    transform: translateY(-2000px);
+    -webkit-transform: translateY(-100%);
+    transform: translateY(-100%);
   }
 }
 

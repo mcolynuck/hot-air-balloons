@@ -88,16 +88,20 @@
 				$(id).css("top", top+"px");		// Start image just below bottom of screen.
 
 				// set image size (based on image size)
-				var height = Math.random() * 1000 * 0.8;	// 0.8 is scaler to increase/decrease height size so we can have even larger or lesser maximum sizes.
+				var height = Math.random() * 1000 * 0.8,	// 0.8 is scaler to increase/decrease height size so we can have even larger or lesser maximum sizes.
+				    width = 0;
+
 				if(height < 20) {
 					height += 20;		// No micro-sized balloons!
 				} else if(height > 2000) {
 					height = 2000;	// No mega-sized balloons!
 				}
-				$(id).css("height", height+"px");
-				
-				var width = height * 25 / 30;		// Chrome didn't like it when I just set the height so use image ratio of 30 high by 25 wide.
-				$(id).css("width", width+"px");
+
+				width = height * 25 / 30;				// Chrome didn't like it when I just set the height so use image ratio of 30 high by 25 wide.
+
+				// Set div and image sizes
+				$(id).css("height", height+"px").css("width", width+"px");				
+				$(id).find("img").css("height", height+"px").css("width", width+"px");			// Fixes issue with Safari
 
 				// set x-position using viewWidth
 				var left = Math.random() * (viewWidth + 300) - 300;		// Increase screen width for calc then offset so we overlap images on left side.
@@ -176,17 +180,21 @@ console.log("-liveCnt: "+liveCnt+"  ("+id+")");
 				// Set it with the position, overriding it's original setting prior to animation.				
 				divElm.css({top: pos.top, left: pos.left, position:'absolute'});
 
+				divElm.css('display', 'none');		// Safari sometimes flashes image at a higher position so hide it temporarily
+
 				// Remove animation classes
 				divElm.removeClass("slideInUp");
 				divElm.removeClass("animated");
 
-				// Turn animation process back on
-				divElm.css('animation-play-state', 'running');
-				divElm.css('-moz-animation-play-state', 'running');
-				divElm.css('-webkit-animation-play-state', 'running');
-
 				// Use the calculated duration time for this element in the fall
-				var curDuration = divElm.css('animation-duration');
+				var curDuration = 0;
+				if (divElm.css('animation-duration')) {
+					curDuration = divElm.css('animation-duration');
+				} else if (divElm.css('-moz-animation-duration')) {
+					curDuration = divElm.css('-moz-animation-duration');
+				} else {
+					curDuration = divElm.css('-webkit-animation-duration');
+				}
 				var parts = curDuration.split("s");		// Need to remove 's'
 				curDuration = parseInt((parseInt(parts[0]) / 3)) + 's';	// A fraction of the rising time
 
@@ -203,6 +211,13 @@ console.log("-liveCnt: "+liveCnt+"  ("+id+")");
 				divElm.css('animation-delay', '0s, 1s');
 				divElm.css('-moz-animation-delay', '0s, 1s');
 				divElm.css('-webkit-animation-delay', '0s, 1s');
+
+				// Turn animation process back on
+				divElm.css('animation-play-state', 'running');
+				divElm.css('-moz-animation-play-state', 'running');
+				divElm.css('-webkit-animation-play-state', 'running');
+
+				divElm.css('display', 'block');		// Re-display the image now that we've modified it.
 			}
 
 
