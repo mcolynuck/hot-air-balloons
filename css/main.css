@@ -11,7 +11,7 @@ body {
 	height: 500px;
 	width: 100%;
 	overflow: hidden;
-	background-image: url("../images/background.png");
+	background-image: url("../images/background1.png");
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-attachment: fixed;	
@@ -22,21 +22,35 @@ body {
 }
 
 #bannerPanel {
-	width: 450px;
+	width: 600px;
 	height: 200px;
 	margin: 0 auto;
-	background-color: aliceblue;
+	position: relative;
+	z-index: 620;
 }
 
 #bannerPanel h1 {
 	text-align: center;
-	margin-top: 100px;
+	margin: 100px 0 0 0;
+	font-size: 95px;
+	font-family: Verdana, Geneva, sans-serif;
+	color: orange;
+	text-shadow: -3px 3px #ff0000;
 }
 
-.burst {
-	background-color: red;
+#bannerPanel h4 {
+	text-align: center;
+	margin: 0;
+	font-size: 16px;
+	font-family: Verdana, Geneva, sans-serif;
+	color: orange;
+	text-shadow: 1px 1px #ff0000;	
 }
 
+
+#audio-ctrl {
+
+}
 
 /* balloon2 ------ */
 .image-container {
@@ -69,33 +83,66 @@ body {
 /* =============================== */
 @-webkit-keyframes slideInUp {
   from {
-    -webkit-transform: translate(0, 0);
-    transform: translate(0, 0);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
     visibility: visible;
   }
 
   100% {
-    -webkit-transform: translate(0, -100%);
-    transform: translate(0, -100%);
+    -webkit-transform: translateY(-100%);
+    transform: translateY(-100%);
   }
 }
 
 @keyframes slideInUp {
   from {
-    -webkit-transform: translate(0, 0);
-    transform: translate(0, 0);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
     visibility: visible;
   }
 
   100% {
-    -webkit-transform: translate(0, -2000px);
-    transform: translate(0, -2000px);
+    -webkit-transform: translateY(-2000px);
+    transform: translateY(-2000px);
   }
 }
 
 .slideInUp {
   -webkit-animation-name: slideInUp;
   animation-name: slideInUp;
+}
+
+
+/* ============================= */
+@-webkit-keyframes slideOutDown {
+  from {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+
+  100% {
+    visibility: hidden;
+    -webkit-transform: translateY(2000%);
+    transform: translateY(2000%);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+
+  100% {
+    visibility: hidden;
+    -webkit-transform: translateY(2000%);
+    transform: translateY(2000%);
+  }
+}
+
+.slideOutDown {
+  -webkit-animation-name: slideOutDown;
+  animation-name: slideOutDown;
 }
 
 /* =========================== */
@@ -136,37 +183,4 @@ body {
 .shake {
   -webkit-animation-name: shake;
   animation-name: shake;
-}
-
-
-/* ============================= */
-@-webkit-keyframes slideOutDown {
-  from {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  100% {
-    visibility: hidden;
-    -webkit-transform: translate3d(0, 2000%, 0);
-    transform: translate3d(0, 2000%, 0);
-  }
-}
-
-@keyframes slideOutDown {
-  from {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  100% {
-    visibility: hidden;
-    -webkit-transform: translate3d(0, 2000%, 0);
-    transform: translate3d(0, 2100%, 0);
-  }
-}
-
-.slideOutDown {
-  -webkit-animation-name: slideOutDown;
-  animation-name: slideOutDown;
 }

@@ -7,26 +7,19 @@
 	</head>
 	<body>
 
-<!-- 
-	background
-		balloon slide up from bottom
-			varied scale sizes
-		burst action
-			flash image
-			burning balloon image
-			fall down fast
- -->
-
 		<div id="content">
 			<div id="bannerPanel">
-				<h1>The Sky's The Limit!</h1>
-				<span id="clearmsg">Click in view to stop adding balloons, click on balloon to pop it!</span>
-				<audio autoplay loop controls style="position:absolute;top:15px;z-index:1000;">
-					<source src="sounds/burner.wav" type="audio/wav">
-				</audio>
+				<h1>ADVENTURE</h1>
+				<h4>(Is what you make of it)</h4>
+				<span id="clearmsg">Click in view to stop/restart adding balloons, click on a balloon to sink it!</span>
 			</div>
 		</div>
 
+		<div id="audio-ctrl">
+			<audio autoplay loop controls style="position:absolute;top:15px;z-index:1000;">
+				<source src="sounds/burner.wav" type="audio/wav">
+			</audio>
+		</div>
 
 		<template id="balloon-template">
 			<div id="" class="image-container">			<!-- block, width and height -->
@@ -39,29 +32,31 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
 
-		<!-- EXECUTABLE CODE -->
+		<!-- EXECUTABLE CODE BELOW -->
 		<script type="text/javascript">
-			var cnt = 0,
-				cntMax = 7,			// Number of balloon images
+			// Globals
+			var imageNum = 0,
+				maxImageNum = 7,			// Max number of balloon images available
 				liveCnt = 0,
-				maxLiveCnt = 12,
-				stopMaking = false;
+				maxLiveCnt = 12,			// Max number of balloons to display at one time
+				stopMakingBalloons = false,
+			    intervalTimer = null;
 
-			/*
+			/* =================================================
 			 * Counter for use in looping over balloon images.
-			 */
-			function nextCount(){
-				if(cnt >= cntMax){
-					cnt = 0;
+			 * ================================================= */
+			function nextImgNum(){
+				if(imageNum >= maxImageNum){
+					imageNum = 0;
 				}
-				return cnt++;
+				return imageNum++;
 			}
 
 
-			/*
+			/* =================================================
 			 * Create balloon element and set atributes
-			 */
-			function makeBalloon(template){
+			 * ================================================= */
+			function buildElement(template){
 				var key = "balloon_"+(new Date()).getTime();
 
 				if(!template.content){	// Work-around for IE but could work for all browsers
@@ -75,16 +70,16 @@
 				// Set attributes we're interested in.
 				item.querySelector('.image-container').setAttribute('id', key);
 				// item.querySelector(".gallery").setAttribute('onclick', "launchGalleryItem('"+data['url']+"')");
-				item.querySelector('.image-img').src = 'images/balloon_' + nextCount() + '.png';
+				item.querySelector('.image-img').src = 'images/balloon_sm_' + nextImgNum() + '.png';
 
 				return item;
 			}
 
 
-			/*
+			/* =================================================
 			 * Positions, sizes, times this item
 			 * id - id of div that surrounds the image
-			 */
+			 * ================================================= */
 			function setDisplayParams(id) {
 				var viewWidth = document.documentElement.clientWidth,
 				    viewHeight = $("#content").css("height");
@@ -101,7 +96,7 @@
 				}
 				$(id).css("height", height+"px");
 				
-				var width = height * 30 / 25;		// Chrome didn't like it when I just set the height so use image ratio of 30 high by 25 wide.
+				var width = height * 25 / 30;		// Chrome didn't like it when I just set the height so use image ratio of 30 high by 25 wide.
 				$(id).css("width", width+"px");
 
 				// set x-position using viewWidth
@@ -123,44 +118,41 @@
 			}
 
 
-			/*
+			/* =================================================
 			 * Entry point tomake a new balloon
-			 */
-			function makeIt() {
-				if(stopMaking) {
+			 * ================================================= */
+			function makeBalloon() {
+
+				// Check for a halt in producing new balloons or if we've hit our maximum allowed.
+				if(stopMakingBalloons) {
 					return;
-				}
-
-				var template = document.querySelector('#balloon-template'),
-				    balloon = makeBalloon(template),
-				    container = document.querySelector('#content'),
-				    id = balloon.querySelector('.image-container').getAttribute('id');
-
-				if (liveCnt >= maxLiveCnt) {
-					if(intervalTimer){
-						window.clearInterval(intervalTimer);
-						intervalTimer = null;
-					}
+				} else if (liveCnt >= maxLiveCnt) {
 					return;		// Too many on screen already so wait until some ar popped or rise out of sight.
 				}
 
+
+				var template = document.querySelector('#balloon-template'),
+				    balloon = buildElement(template),
+				    container = document.querySelector('#content'),
+				    id = balloon.querySelector('.image-container').getAttribute('id');
+
 				liveCnt++;
-// console.log("+liveCnt: "+liveCnt);
+console.log("+liveCnt: "+liveCnt+"  ("+id+")");
 				container.appendChild(document.importNode(balloon, true));
 				setDisplayParams("#"+id);
 
+
 				// Remove node after completion to avoid memory issue with all the imates loaded but no longer visible.
 				$('#'+id).on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(event){
-console.log("animation completed: "+event.originalEvent.animationName);
+// console.log("animation completed: "+event.originalEvent.animationName);
 					if(event.originalEvent.animationName == 'shake') {
+console.log("shake animation so skipping removal ("+id+")");
 						return;		// Ignore this as it's not the end animation when user clicks on balloon.
 					}	// Only slideInUp or slideOutDown will continue through.
 
 					liveCnt--;
-console.log("-liveCnt: "+liveCnt);
+console.log("-liveCnt: "+liveCnt+"  ("+id+")");
 					$('#'+id).remove();
-					makeIt();		// Create a new one to take its place.
-					// $(this)[0].parentNode.removeChild($(this)[0]);
 				});
 
 				// // Show it and start the animation
@@ -168,9 +160,9 @@ console.log("-liveCnt: "+liveCnt);
 			}
 
 
-			/**
+			/** =================================================
 			 * Div element being popped by mouse click
-			 */
+			 *  ================================================= */
 			function popBalloon(divElm) {
 				
 				// Stop the animation in its tracks
@@ -215,15 +207,16 @@ console.log("-liveCnt: "+liveCnt);
 
 
 
-			/* --------------------------------------------------------------*/
-			var intervalTimer = null;
+			 /* ================================================= 
+			  * Windows load event
+			  * ================================================= */
 			$( window ).load(function() {	// Window is ready for us to start processing
 
-				// Randomize first balloon image to load
-				cnt = parseInt(Math.random() * 10);		// If over maxCnt, it will be rest to zero.
+				// Randomizes first balloon image to load
+				imageNum = parseInt(Math.random() * 10);		// If value is over maxImageNum, it will be rest to zero before use.
 
 				for(var i=0; i < 3; i++){		// Kick off with a few balloons
-					makeIt();
+					makeBalloon();
 				}
 
 				$("#content").on("click", function(event){
@@ -231,23 +224,21 @@ console.log("-liveCnt: "+liveCnt);
 console.log("pop!");
 						popBalloon($(event.target).parent());
 					} else {
-console.log("stop");
-						stopMaking = true;
-						if(intervalTimer){
-							window.clearInterval(intervalTimer);
-							intervalTimer = null;
-						}
+console.log((stopMakingBalloons ? "restarting" : "stop"));
+						stopMakingBalloons = !stopMakingBalloons;		// Toggle process
 					}
 				});
 
 				// Every 5 seconds, kick off another balloon with an offset time so they're not so regular looking.
 				intervalTimer = window.setInterval(function(){
-						window.setTimeout(function(){
-							makeIt();
-						},
-						Math.random()*10);
+						if(!stopMakingBalloons && liveCnt < maxLiveCnt) {
+							window.setTimeout(function(){
+								makeBalloon();
+							},
+							Math.random()*1000);		// Random timespan (0 to 10 seconds)
+						}
 					},
-					7000
+					4000	// 4 seonds
 				);
 			});
 		</script>
