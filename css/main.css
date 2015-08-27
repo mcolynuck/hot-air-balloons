@@ -88,8 +88,8 @@ body {
   }
 
   100% {
-    -webkit-transform: translateY(-100%);
-    transform: translateY(-100%);
+    -webkit-transform: translateY(-300%);
+    transform: translateY(-300%);
   }
 }
 
@@ -101,8 +101,8 @@ body {
   }
 
   100% {
-    -webkit-transform: translateY(-100%);
-    transform: translateY(-100%);
+    -webkit-transform: translateY(-300%);
+    transform: translateY(-300%);
   }
 }
 
