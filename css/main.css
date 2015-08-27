@@ -4,9 +4,14 @@ html, body, div {
 }
 
 body {
+	background-color: black;
 }
 
-#content {
+#top-panel {
+	height: 500px;
+}
+
+#top-panel #sky-content {
 	position: absolute;
 	height: 500px;
 	width: 100%;
@@ -49,10 +54,18 @@ body {
 
 
 #audio-ctrl {
-
 }
 
-/* balloon2 ------ */
+#click-msg {
+	position: absolute;
+	left: 10px;
+	top: 480px;		/* Just above bottom of content div. */
+	z-index: 10000;
+	background-color: rgba(222, 222, 222, 0.63);
+}
+
+
+/* balloon ------ */
 .image-container {
 	display: block;
 	visibility: hidden;

@@ -6,33 +6,40 @@
 
 	</head>
 	<body>
-
-		<div id="content">
-			<div id="bannerPanel">
-				<h1>ADVENTURE</h1>
-				<h4>(Is what you make of it)</h4>
-				<span id="clearmsg">Click in view to stop/restart adding balloons, click on a balloon to sink it!</span>
-			</div>
-		</div>
-
-		<div id="audio-ctrl">
-			<audio autoplay loop controls style="position:absolute;top:15px;z-index:1000;">
-				<source src="sounds/burner.wav" type="audio/wav">
-			</audio>
-		</div>
-
 		<template id="balloon-template">
 			<div id="" class="image-container">			<!-- block, width and height -->
 				<img id="" src="" alt="balloon" class="image-img"/>		<!-- height:100% -->
 			</div>
 		</template>
 
+		<!-- Start of displayable page -->
+		<div id="top-panel">
+			<div id="sky-content">
+				<div id="bannerPanel">
+					<h1>ADVENTURE</h1>
+					<h4>(Is what you make of it)</h4>
+				</div>
+			</div>		
+			<div id="click-msg">
+				<span id="clearmsg">Click in view to stop/restart adding balloons, click on a balloon to sink it!</span>			
+			</div>
+		</div>
+	
+		<div id="audio-ctrl">
+			<audio autoplay loop controls style="position:absolute;top:15px;z-index:1000;">
+				<source src="sounds/burner.wav" type="audio/wav">
+			</audio>
+		</div>
+
+		<!-- End of displayable page -->
 
 
+		<!-- Files to include -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
-
+		<!-- =================================== -->
 		<!-- EXECUTABLE CODE BELOW -->
+		<!-- =================================== -->
 		<script type="text/javascript">
 			// Globals
 			var imageNum = 0,
@@ -82,7 +89,7 @@
 			 * ================================================= */
 			function setDisplayParams(id) {
 				var viewWidth = document.documentElement.clientWidth,
-				    viewHeight = $("#content").css("height");
+				    viewHeight = $("#sky-content").css("height");
 
 				var top = parseInt(viewHeight) + 10;		// Add a bit extra, just in case.
 				$(id).css("top", top+"px");		// Start image just below bottom of screen.
@@ -137,7 +144,7 @@
 
 				var template = document.querySelector('#balloon-template'),
 				    balloon = buildElement(template),
-				    container = document.querySelector('#content'),
+				    container = document.querySelector('#sky-content'),
 				    id = balloon.querySelector('.image-container').getAttribute('id');
 
 				liveCnt++;
@@ -234,7 +241,7 @@ console.log("-liveCnt: "+liveCnt+"  ("+id+")");
 					makeBalloon();
 				}
 
-				$("#content").on("click", function(event){
+				$("#sky-content").on("click", function(event){
 					if ($(event.target).is(".image-img")) {
 console.log("pop!");
 						popBalloon($(event.target).parent());
